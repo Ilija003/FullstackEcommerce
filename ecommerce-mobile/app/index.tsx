@@ -6,15 +6,13 @@ import { Button, ButtonText } from '@/components/ui/button';
 
 
 export default function HomeScreen() {
-  return(
-    <Button variant="outline">
-        <ButtonText>Press me</ButtonText>
-    </Button>
-  )
-    /*return (
+  
+    return (
         <FlatList data={products} 
-        renderItem={({item}) => <ProductListItem product={item}/>}
-         
-  />
- );*/
+        numColumns={2}
+        contentContainerClassName="gap-2"
+        columnWrapperClassName="gap-2"
+        renderItem={({item}) => <ProductListItem product={item}/>}       
+        />
+ );
 }
