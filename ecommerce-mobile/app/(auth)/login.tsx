@@ -25,7 +25,7 @@ export default function LoginScreen() {
     mutationFn: () => login(email, password),
     onSuccess: (data) => {
       console.log('Success', data);
-      if(!data.user && data.token){
+      if(data.user && data.token){
         setUser(data.user);
         setToken(data.token);
       }
