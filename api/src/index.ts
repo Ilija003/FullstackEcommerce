@@ -2,13 +2,15 @@ import express, { json, urlencoded } from 'express';
 import productsRoutes from './routes/products/index.js';
 import authRoutes from './routes/auth/index.js';
 import ordersRoutes from './routes/orders/index.js';
+import stripeRoutes from './routes/stripe/index.js';
 
 import serverless from 'serverless-http';
+import cors from 'cors';  
 
 const port = 3001;
-
 const app = express();
 
+app.use(cors()); 
 app.use(urlencoded({ extended: false }));
 app.use(json());
 
@@ -16,16 +18,16 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-//products endpoints
-
+// Routes
 app.use('/products', productsRoutes);
 app.use('/auth', authRoutes);
 app.use('/orders', ordersRoutes);
+app.use('/stripe', stripeRoutes);
 
 if (process.env.NODE_ENV === 'dev') {
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  });
 }
 
 export const handler = serverless(app);

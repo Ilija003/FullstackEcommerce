@@ -31,7 +31,7 @@ useEffect(()=>{
   }
 
   if (error) {
-    return <Text>Error fetching products</Text>
+    return <Text>Error fetching products {error.message}</Text>
   }
   return (
     <FlatList

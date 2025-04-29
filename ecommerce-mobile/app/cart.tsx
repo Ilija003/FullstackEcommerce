@@ -2,15 +2,49 @@ import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
 import { useCart } from '@/store/cartStore';
-import { FlatList } from 'react-native';
+import { Alert, FlatList } from 'react-native';
 import { Button, ButtonText } from '@/components/ui/button';
-import { Redirect } from 'expo-router';
-import { useMutation } from '@tanstack/react-query';
+import { Redirect, useRouter } from 'expo-router';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
+import { createPaymentIntent } from '@/api/stripe';
+import { useEffect } from 'react';
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
   const resetCart = useCart((state) => state.resetCart);
+
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+
+const paymentIntentMutation = useMutation({
+  mutationFn: createPaymentIntent,
+  onSuccess: async (data) => {
+    const { customer, ephemeralKey, paymentIntent } = data;
+
+      const { error } = await initPaymentSheet({
+        merchantDisplayName: 'Example, Inc.',
+        customerId: customer,
+        customerEphemeralKeySecret: ephemeralKey,
+        paymentIntentClientSecret: paymentIntent,
+        
+        defaultBillingDetails: {
+          name: 'Jane Doe',
+        },
+       
+      });
+      if (error) {
+        Alert.alert('Error', error.message);
+        console.log(error);
+      }
+      openPaymentSheet();
+  },
+  onError: (error) => {
+    Alert.alert('Error', error.message);
+    console.log(error);
+  },
+});
+
+const router = useRouter();
 
   const createOrderMutation = useMutation({
     mutationFn: () =>
@@ -22,17 +56,26 @@ export default function CartScreen() {
         }))
       ),
       onSuccess: (data) => {
-        console.log(data);
-
-        resetCart();
+        paymentIntentMutation.mutate({ orderId: data.id });
       },
       onError: (error) => {
         console.log(error);
       }
   });
 
+  const openPaymentSheet = async () => {
+    const { error } = await presentPaymentSheet();
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+    } else {
+      Alert.alert('Success', 'Your order is confirmed!');
+      resetCart();
+      router.replace('/');
+    }
+  };
   const onCheckout = async () => {
-    createOrderMutation.mutate();
+    createOrderMutation.mutateAsync();
     
   };
 
