@@ -38,7 +38,7 @@ export default function LoginScreen() {
     mutationFn: () => signup(email, password),
     onSuccess: (data) => {
       console.log('Success sign up:', data);
-      if(!data.user && data.token){
+      if(data.user && data.token){
         setUser(data.user);
         setToken(data.token);
       }
@@ -54,7 +54,7 @@ export default function LoginScreen() {
     });
   };
   if(isLoggedIn){
-    return <Redirect href={('/')}/>
+   return <Redirect href={('/')}/>
   }
   return (
     <FormControl className="p-4 border rounded-lg max-w-[500px] border-outline-300 bg-white p-2">

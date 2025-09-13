@@ -1,14 +1,15 @@
-import { Text } from '@/components/ui/text';
 import { HStack } from '@/components/ui/hstack';
 import { VStack } from '@/components/ui/vstack';
+import { Text } from '@/components/ui/text';
 import { useCart } from '@/store/cartStore';
-import { Alert, FlatList } from 'react-native';
+import { View, Alert, FlatList } from 'react-native';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Redirect, useRouter } from 'expo-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createOrder } from '@/api/orders';
 import { createPaymentIntent } from '@/api/stripe';
 import { useEffect } from 'react';
+import { useStripe } from '@stripe/stripe-react-native';
 
 export default function CartScreen() {
   const items = useCart((state) => state.items);
@@ -30,7 +31,7 @@ const paymentIntentMutation = useMutation({
         defaultBillingDetails: {
           name: 'Jane Doe',
         },
-       
+       //returnURL: 'mobile-ecom://',
       });
       if (error) {
         Alert.alert('Error', error.message);
@@ -39,7 +40,6 @@ const paymentIntentMutation = useMutation({
       openPaymentSheet();
   },
   onError: (error) => {
-    Alert.alert('Error', error.message);
     console.log(error);
   },
 });

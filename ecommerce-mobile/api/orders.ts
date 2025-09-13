@@ -12,8 +12,8 @@ export async function createOrder(items: any[]){
             'Content-Type': 'application/json',
             Authorization: token,
         },
-        body: JSON.stringify({order: {}, items})
-    })
+        body: JSON.stringify({order: {}, items}),
+    });
 
     const data = await res.json();
 
